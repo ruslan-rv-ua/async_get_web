@@ -15,6 +15,8 @@ class URLValidator(BaseModel):
     url: HttpUrl
 
     def is_file(self):
+        if not self.url.path:
+            return False
         path = PurePath(self.url.path)
         ext = path.suffix[1:]
         if not ext:
