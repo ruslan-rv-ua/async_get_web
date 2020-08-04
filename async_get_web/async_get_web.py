@@ -59,7 +59,7 @@ def _make_get_webpage_async_function(
             )
 
         content_type = response.headers.get("Content-Type")
-        if not "html" in content_type:
+        if "html" not in content_type:
             return WebpageResponse(
                 link=url, response=response, error=BadContentType(content_type)
             )
