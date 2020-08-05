@@ -2,18 +2,18 @@
 
 todo
 """
-__all__ = ["get_webpages", "get_urls"]
+__all__ = ["WebpageResponse", "get_webpages", "get_urls"]
 
 from typing import Iterable, List, Optional
 
-from pydantic import BaseModel, HttpUrl, ValidationError
+from pydantic import BaseModel, ValidationError
 from requests import Response
 from requests_html import AsyncHTMLSession as Session
 
 from .validators import URLValidator
 from .exceptions import *
 
-_FILTER_EXTENSIONS_DEFAULT_VALUE = True
+_FILTER_EXTENSIONS = True
 
 
 ########################################
@@ -21,8 +21,8 @@ _FILTER_EXTENSIONS_DEFAULT_VALUE = True
 ########################################
 class WebpageResponse(BaseModel):
     link: str
-    response: Optional[Response] = None
-    error: Optional[Exception] = None
+    response: Optional[Response]
+    error: Optional[Exception]
 
     @property
     def url(self):
@@ -31,6 +31,10 @@ class WebpageResponse(BaseModel):
     @property
     def title(self):
         return self.response.html.find("title", first=True).text
+
+    @property
+    def html(self):
+        return self.response.html.html
 
     class Config:
         arbitrary_types_allowed = True
@@ -73,7 +77,7 @@ def get_webpages(
     urls: Iterable[str],
     *,
     async_session: Session = None,
-    filter_extensions: bool = _FILTER_EXTENSIONS_DEFAULT_VALUE
+    filter_extensions: bool = _FILTER_EXTENSIONS
 ) -> List[WebpageResponse]:
     session = async_session or Session()
     async_functions = [

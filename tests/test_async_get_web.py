@@ -16,7 +16,10 @@ def webpages():
 
 
 def test_content(webpages):
+    from easy_file import TextFile
+
     assert len(webpages) == 2
     print()
     for w in webpages:
         print(f"{w.url} - {w.title}")
+        TextFile(f"{w.title.split()[0]}.html").save(w.html)
